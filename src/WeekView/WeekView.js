@@ -19,12 +19,12 @@ import Title from '../Title/Title';
 import Times from '../Times/Times';
 import styles from './WeekView.styles';
 import {
-  CONTAINER_HEIGHT,
   DATE_STR_FORMAT,
   availableNumberOfDays,
   setLocale,
-  CONTAINER_WIDTH,
+  CONTAINER_HEIGHT,
 } from '../utils';
+
 
 const MINUTES_IN_DAY = 60 * 24;
 
@@ -45,6 +45,7 @@ export default class WeekView extends Component {
       props.prependMostRecent,
       props.fixedHorizontally,
     );
+
     this.state = {
       // currentMoment should always be the first date of the current page
       currentMoment: moment(initialDates[this.currentPageIndex]).toDate(),
@@ -359,8 +360,8 @@ export default class WeekView extends Component {
   });
 
   getListItemLayout = (index) => ({
-    length: CONTAINER_WIDTH,
-    offset: CONTAINER_WIDTH * index,
+    length: this.props.width - 60,
+    offset: (this.props.width - 60) * index,
     index,
   });
 
@@ -391,6 +392,7 @@ export default class WeekView extends Component {
       onDragEvent,
       isRefreshing,
       RefreshComponent,
+      width,
     } = this.props;
     const { currentMoment, initialDates } = this.state;
     const times = this.calculateTimes(timeStep, formatTimeLabel);
@@ -424,7 +426,13 @@ export default class WeekView extends Component {
             initialScrollIndex={this.pageOffset}
             renderItem={({ item }) => {
               return (
-                <View key={item} style={styles.header}>
+                <View key={item} style={[
+                    styles.header,
+                    {
+                      width: width - 60,
+                    }
+                  ]}
+                >
                   <Header
                     style={headerStyle}
                     textStyle={headerTextStyle}
@@ -440,7 +448,15 @@ export default class WeekView extends Component {
           />
         </View>
         {isRefreshing && RefreshComponent && (
-          <RefreshComponent style={styles.loadingSpinner} />
+          <RefreshComponent
+            style={[
+              styles.loadingSpinner,
+              {
+                top: CONTAINER_HEIGHT / 2,
+                right: (this.props.width - 60) / 2,
+              }
+            ]}
+          />
         )}
         <ScrollView
           onStartShouldSetResponderCapture={() => false}
@@ -486,6 +502,7 @@ export default class WeekView extends Component {
                     showNowLine={showNowLine}
                     nowLineColor={nowLineColor}
                     onDragEvent={onDragEvent}
+                    width={width}
                   />
                 );
               }}
@@ -548,9 +565,11 @@ WeekView.propTypes = {
   onDragEvent: PropTypes.func,
   isRefreshing: PropTypes.bool,
   RefreshComponent: PropTypes.elementType,
+  width: PropTypes.number,
 };
 
 WeekView.defaultProps = {
+  width: 375,
   events: [],
   locale: 'en',
   hoursInDisplay: 6,

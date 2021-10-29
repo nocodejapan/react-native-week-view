@@ -7,21 +7,19 @@ import memoizeOne from 'memoize-one';
 import NowLine from '../NowLine/NowLine';
 import Event from '../Event/Event';
 import {
-  CONTAINER_HEIGHT,
-  CONTAINER_WIDTH,
   calculateDaysArray,
   DATE_STR_FORMAT,
   availableNumberOfDays,
   minutesToYDimension,
   CONTENT_OFFSET,
   getTimeLabelHeight,
+  CONTAINER_HEIGHT,
 } from '../utils';
 
 import styles from './Events.styles';
 
 const MINUTES_IN_HOUR = 60;
 const EVENT_HORIZONTAL_PADDING = 15;
-const EVENTS_CONTAINER_WIDTH = CONTAINER_WIDTH - EVENT_HORIZONTAL_PADDING;
 const MIN_ITEM_WIDTH = 4;
 const ALLOW_OVERLAP_SECONDS = 2;
 
@@ -158,7 +156,9 @@ class Events extends PureComponent {
   };
 
   getEventItemWidth = (padded = true) => {
-    const { numberOfDays } = this.props;
+    const { numberOfDays, width } = this.props;
+    const CONTAINER_WIDTH = width - 60;
+    const EVENTS_CONTAINER_WIDTH = CONTAINER_WIDTH - EVENT_HORIZONTAL_PADDING;
     const fullWidth = padded ? EVENTS_CONTAINER_WIDTH : CONTAINER_WIDTH;
     return fullWidth / numberOfDays;
   };
@@ -245,6 +245,7 @@ class Events extends PureComponent {
       showNowLine,
       nowLineColor,
       onDragEvent,
+      width,
     } = this.props;
     const totalEvents = this.processEvents(
       eventsByDate,
@@ -255,7 +256,7 @@ class Events extends PureComponent {
     );
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { width: width - 60 }]}>
         {times.map((time) => (
           <View
             key={time}
@@ -321,6 +322,7 @@ Events.propTypes = {
   showNowLine: PropTypes.bool,
   nowLineColor: PropTypes.string,
   onDragEvent: PropTypes.func,
+  width: PropTypes.number
 };
 
 export default Events;
