@@ -21,7 +21,7 @@ Times.propTypes = {
   times: PropTypes.arrayOf(PropTypes.string).isRequired,
   hoursInDisplay: PropTypes.number.isRequired,
   timeStep: PropTypes.number.isRequired,
-  textStyle: Text.propTypes.style,
+  textStyle: PropTypes.any,
 };
 
 export default React.memo(Times);

@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { CONTAINER_WIDTH, CONTENT_OFFSET } from '../utils';
 
 const GREY_COLOR = '#E9EDF0';
@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     width: CONTAINER_WIDTH,
   },
   timeRow: {
-    flex: 0,
+    flex: Platform.OS === "web" ? "" : 0,
   },
   timeLabelLine: {
     height: 1,
