@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Text, View } from 'react-native';
+import { Text, View, Platform } from 'react-native';
 import moment from 'moment';
 
 import {
@@ -81,8 +81,14 @@ const WeekViewHeader = ({
   rightToLeft,
 }) => {
   const columns = calculateDaysArray(initialDate, numberOfDays, rightToLeft);
+  const styleWidth =  Platform.OS === "web" ?
+      {
+        width: "100%",
+      }
+    :
+      { }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, styleWidth]}>
       {columns && (
         <Columns
           format={formatDate}
