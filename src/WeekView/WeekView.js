@@ -22,7 +22,6 @@ import {
   DATE_STR_FORMAT,
   availableNumberOfDays,
   setLocale,
-  CONTAINER_HEIGHT,
 } from '../utils';
 
 
@@ -108,7 +107,7 @@ export default class WeekView extends Component {
   scrollToVerticalStart = () => {
     if (this.verticalAgenda) {
       const { startHour, hoursInDisplay } = this.props;
-      const startHeight = (startHour * CONTAINER_HEIGHT) / hoursInDisplay;
+      const startHeight = (startHour * (this.props.height - 60)) / hoursInDisplay;
       this.verticalAgenda.scrollTo({ y: startHeight, x: 0, animated: false });
     }
   };
@@ -452,7 +451,7 @@ export default class WeekView extends Component {
             style={[
               styles.loadingSpinner,
               {
-                top: CONTAINER_HEIGHT / 2,
+                top: (this.props.height - 60) / 2,
                 right: (this.props.width - 60) / 2,
               }
             ]}
@@ -470,6 +469,7 @@ export default class WeekView extends Component {
               textStyle={hourTextStyle}
               hoursInDisplay={hoursInDisplay}
               timeStep={timeStep}
+              height={this.props.height}
             />
             <VirtualizedList
               data={initialDates}
@@ -503,6 +503,7 @@ export default class WeekView extends Component {
                     nowLineColor={nowLineColor}
                     onDragEvent={onDragEvent}
                     width={width}
+                    height={this.props.height}
                   />
                 );
               }}
@@ -566,10 +567,12 @@ WeekView.propTypes = {
   isRefreshing: PropTypes.bool,
   RefreshComponent: PropTypes.elementType,
   width: PropTypes.number,
+  height: PropTypes.number,
 };
 
 WeekView.defaultProps = {
   width: 375,
+  height: 600,
   events: [],
   locale: 'en',
   hoursInDisplay: 6,

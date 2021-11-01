@@ -13,7 +13,6 @@ import {
   minutesToYDimension,
   CONTENT_OFFSET,
   getTimeLabelHeight,
-  CONTAINER_HEIGHT,
 } from '../utils';
 
 import styles from './Events.styles';
@@ -29,19 +28,19 @@ const areEventsOverlapped = (event1EndDate, event2StartDate) => {
   return endDate.isSameOrAfter(event2StartDate);
 };
 
-const getStyleForEvent = (event, regularItemWidth, hoursInDisplay) => {
+const getStyleForEvent = (event, regularItemWidth, hoursInDisplay, height) => {
   const startDate = moment(event.startDate);
   const startHours = startDate.hours();
   const startMinutes = startDate.minutes();
   const totalStartMinutes = startHours * MINUTES_IN_HOUR + startMinutes;
-  const top = minutesToYDimension(hoursInDisplay, totalStartMinutes);
+  const top = minutesToYDimension(hoursInDisplay, totalStartMinutes, height);
   const deltaMinutes = moment(event.endDate).diff(event.startDate, 'minutes');
-  const height = minutesToYDimension(hoursInDisplay, deltaMinutes);
+  const _height = minutesToYDimension(hoursInDisplay, deltaMinutes, height);
 
   return {
     top: top + CONTENT_OFFSET,
     left: 0,
-    height,
+    height: _height,
     width: regularItemWidth,
   };
 };
@@ -113,12 +112,12 @@ const addOverlappedToArray = (baseArr, overlappedArr, itemWidth) => {
   });
 };
 
-const getEventsWithPosition = (totalEvents, regularItemWidth, hoursInDisplay) => {
+const getEventsWithPosition = (totalEvents, regularItemWidth, hoursInDisplay, height) => {
   return totalEvents.map((events) => {
     let overlappedSoFar = []; // Store events overlapped until now
     let lastDate = null;
     const eventsWithStyle = events.reduce((eventsAcc, event) => {
-      const style = getStyleForEvent(event, regularItemWidth, hoursInDisplay);
+      const style = getStyleForEvent(event, regularItemWidth, hoursInDisplay, height);
       const eventWithStyle = {
         data: event,
         style,
@@ -151,7 +150,7 @@ const getEventsWithPosition = (totalEvents, regularItemWidth, hoursInDisplay) =>
 class Events extends PureComponent {
   yToHour = (y) => {
     const { hoursInDisplay } = this.props;
-    const hour = (y * hoursInDisplay) / CONTAINER_HEIGHT;
+    const hour = (y * hoursInDisplay) / (this.props.height - 60);
     return hour;
   };
 
@@ -180,6 +179,7 @@ class Events extends PureComponent {
         totalEvents,
         regularItemWidth,
         hoursInDisplay,
+        this.props.height,
       );
       return totalEventsWithPosition;
     },
@@ -262,7 +262,7 @@ class Events extends PureComponent {
             key={time}
             style={[
               styles.timeRow,
-              { height: getTimeLabelHeight(hoursInDisplay, timeStep) },
+              { height: getTimeLabelHeight(hoursInDisplay, timeStep, this.props.height) },
             ]}
           >
             <View style={styles.timeLabelLine} />
@@ -281,6 +281,7 @@ class Events extends PureComponent {
                     color={nowLineColor}
                     hoursInDisplay={hoursInDisplay}
                     width={this.getEventItemWidth(false)}
+                    height={this.props.height}
                   />
                 )}
                 {eventsInSection.map((item) => (
@@ -322,7 +323,8 @@ Events.propTypes = {
   showNowLine: PropTypes.bool,
   nowLineColor: PropTypes.string,
   onDragEvent: PropTypes.func,
-  width: PropTypes.number
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default Events;
